@@ -689,7 +689,7 @@ const renderAlbumAPI = (data) => {
   let table = document.getElementById("song-list");
   let tracks = data.tracks.items;
   let preview = document.getElementById("preview");
-  console.log(tracks);
+  console.log(data);
   tracks.forEach((track) => {
     let tr = document.createElement("tr");
     tr.innerHTML = `<th scope="row" ><i class="fa fa-music" aria-hidden="true"></i>
@@ -701,14 +701,13 @@ const renderAlbumAPI = (data) => {
   });
   let card = document.getElementById("prev");
   console.log(card);
-  card.innerHtml = `
-  <img class="card-img-top"
-      src="https://images-na.ssl-images-amazon.com/images/I/71B34LLm%2B9L._SY355_.jpg"
+  card.innerHTML = `<img class="card-img-top"
+      src="${data.images[1].url}"
       alt="Card image cap">
   <div class="card-body d-flex flex-column align-items-center">
       <h5 class=" card-title">Queen II (Deluxe Edition Remaster)</h5>
 
-      <h6>Queen</h6>
+      <h6>${data.name}</h6>
 
       <div class="d-flex flex-column buttons-wrapper align-items-center">
           <button type="button" class="btn-login btn-green d-inline"
