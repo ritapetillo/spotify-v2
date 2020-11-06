@@ -705,9 +705,9 @@ const renderAlbumAPI = (data) => {
       src="${data.images[1].url}"
       alt="Card image cap">
   <div class="card-body d-flex flex-column align-items-center">
-      <h5 class=" card-title">Queen II (Deluxe Edition Remaster)</h5>
+      <h5 class=" card-title">${data.name}</h5>
 
-      <h6>${data.name}</h6>
+      <h6></h6>
 
       <div class="d-flex flex-column buttons-wrapper align-items-center">
           <button type="button" class="btn-login btn-green d-inline"
