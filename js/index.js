@@ -211,7 +211,7 @@ const authentication = () => {
         //'https%3A%2F%2Fspotify-clone-api-js.vercel.app'
     const scopes = 'user-read-private user-read-email user-top-read'
 
-
+// https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=${scopes}&state=34fFs29kd09
    window.location.href = `https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`
 
     
@@ -675,6 +675,60 @@ const renderAlbumAPI = (data) => {
   
 }
 
+//fetch top artists
+
+const fetchTopArtists = () => {
+     return fetch(`https://api.spotify.com/v1/me/top/artists`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': JSON.parse(localStorage.getItem('token'))
+        
+        }
+    }).then(res=>res.json())
+}
+
+//render top artists
+const renderTopArtists = (favArt) => {
+    favArt = favArt.slice(0,6)
+    let topArtistsContainer = document.getElementById('top-artists')
+    console.log(favArt)
+    console.log(topArtistsContainer)
+    favArt.forEach(artist => {
+        let div = document.createElement('div')
+        let divClasses = ["col-6","col-md-4","col-lg-3","col-xl-2","text-center"]
+        div.classList.add(...divClasses)
+        div.innerHTML = `      
+
+                        <div class="card card-spotify">
+                         <a href="albums-fav.html?${artist.id}" class="">
+                            <div class="img-albums">
+                                <div class="imgAlbum">
+                                    <img src="${artist.images[0].url}"
+                                        class="card-img-top d-flex" alt="..." />
+                                    <div class="play_container">
+                                        <i class="far fa-play-circle playFav"
+                                            code="7tFiyTwD0nx5a1eklYtX2J?si=t_70sn2rQymwzhU1wOPThg"></i>
+                                    </div>
+                                    <div class="hearth_container">
+                                        <i class="far fa-heart hearthFav"></i>
+                                    </div>
+                                </div>
+                            </div></a>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${artist.name}
+                                </h5>
+                               
+                            </div>
+                        
+                        </a>`
+        
+        topArtistsContainer.append(div)
+       
+    })
+}
+
 // ON WINDOW LOAD
 
 window.onload = function () {
@@ -692,6 +746,20 @@ window.onload = function () {
     } else if (queryString.indexOf('#access_token') == -1 && JSON.parse(localStorage.getItem('token')) == null && window.location.href.indexOf("login") == -1) {
         window.location.href = '/login.html'
     }
+
+//render home page
+
+    if (window.location.href.indexOf("index") != -1) {
+       
+        fetchTopArtists().then(res => {
+        console.log(res)
+            renderTopArtists(res.items)
+           
+        })
+    }
+
+
+    
     /////////---------RENDER CATEGORIES-----------//////////////
     
     if (window.location.href.indexOf("categories") != -1) {
