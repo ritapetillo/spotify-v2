@@ -848,12 +848,7 @@ window.onload = function () {
 
         if (window.location.href.indexOf("featured-releases") != -1) {
 
-            fetchFeatured().then(data => {
-                renderFeatured(data)
-            
-            }
-            
-            )
+            Releases()
 
 
 
