@@ -439,7 +439,7 @@ const fetchCategories = async () => {
 }
 
 ////------FETCH TOPLIST---------////
-let toplist = []
+let toplist = [] //Couple toplist Playlists
 const fetchToplist = async() =>{
     fetch(`https://api.spotify.com/v1/browse/categories/toplists/playlists`,{
         method: "GET",
@@ -449,7 +449,7 @@ const fetchToplist = async() =>{
         }
     }).then(res => res.json()).then(parsedToplist => {toplists = parsedToplist.playlists.items})}
 
-let globalTop50 = []
+let globalTop50 = [] // Only GlobalTop50 Playlist
 const fetchGlobalTop50 = async() => {
     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF`,{
         method: "GET",
@@ -459,7 +459,7 @@ const fetchGlobalTop50 = async() => {
         }
 }).then(res => res.json()).then(parsedJson => globalTop50 = parsedJson)}
 
-let globalTop50Viral = []
+let globalTop50Viral = [] // Only GlobalTop50Viral Playlist
 const fetchGlobalTop50Viral = async() => {
     fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbLiRSasKsNU9`,{
         method: "GET",
