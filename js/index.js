@@ -707,7 +707,7 @@ const renderAlbumAPI = (data) => {
   <div class="card-body d-flex flex-column align-items-center">
       <h5 class=" card-title">${data.name}</h5>
 
-      <h6></h6>
+      <h6>${data.artists[0].name}</h6>
 
       <div class="d-flex flex-column buttons-wrapper align-items-center">
           <button type="button" class="btn-login btn-green d-inline"
