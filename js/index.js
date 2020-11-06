@@ -440,6 +440,49 @@ const fetchCategories = async () => {
   console.log(JSON.parse(localStorage.getItem("token")));
   return data.categories.items;
 };
+
+////------FETCH TOPLIST---------////
+let toplist = [];
+const fetchToplist = async () => {
+  fetch(`https://api.spotify.com/v1/browse/categories/toplists/playlists`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: JSON.parse(localStorage.getItem("token")),
+    },
+  })
+    .then((res) => res.json())
+    .then((parsedToplist) => {
+      toplists = parsedToplist.playlists.items;
+    });
+};
+
+let globalTop50 = [];
+const fetchGlobalTop50 = async () => {
+  fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: JSON.parse(localStorage.getItem("token")),
+    },
+  })
+    .then((res) => res.json())
+    .then((parsedJson) => (globalTop50 = parsedJson));
+};
+
+let globalTop50Viral = [];
+const fetchGlobalTop50Viral = async () => {
+  fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbLiRSasKsNU9`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: JSON.parse(localStorage.getItem("token")),
+    },
+  })
+    .then((res) => res.json())
+    .then((parsedJson) => (globalTop50Viral = parsedJson));
+};
+
 ///----RENDER FAV ARTISTS ALBUMS-----///
 const renderFavArtistsAlbums = (artSelected, code) => {
   let artistTitle = document.querySelector(".artist-title");
@@ -639,6 +682,17 @@ const fetchFeatured = () => {
   }).then((res) => res.json());
 };
 
+//fetch featured playlist
+const fetchFeatured = () => {
+  return fetch(`https://api.spotify.com/v1/browse/featured-playlists`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: JSON.parse(localStorage.getItem("token")),
+    },
+  }).then((res) => res.json());
+};
+
 //render featured page
 
 const renderFeatured = (data) => {
@@ -790,12 +844,15 @@ window.onload = function () {
 
   //Instantiate Album Object
   if (window.location.href.indexOf("single-album") != -1) {
+    //     album_id = location.search.substring(1);
+
     let album_id = location.search.substring(1);
     fetchAlbumAPI(album_id).then((res) => renderAlbumAPI(res));
 
     console.log(album_id);
 
     //
+
     //     current_album = Discography.albums[album_id];
     //     Album_instance = Object.create(Album);
     //     Album_instance.name = current_album.name;
@@ -851,6 +908,44 @@ window.onload = function () {
     fetchFeatured().then((data) => {
       renderFeatured(data);
     });
+
+    /////////---------LOGIN----------//////////////
+    //add login event
+    loginBtn?.addEventListener("click", login);
+    // const currentUser = localStorage.getItem('currentUser')
+    // if (JSON.parse(localStorage.getItem('currentUser')) != null) {
+    //     currentUser = JSON.parse(localStorage.getItem('currentUser'))
+    // } else {
+    //     currentUser =users[0]
+    // }
+
+    /////////---------LOGOUT----------//////////////
+    logooutBtn?.addEventListener("click", logout);
+
+    /////////---------PLAY SONGS----------//////////////
+    if (albumSongsNodes) {
+      [...albumSongsNodes].forEach((album, i) => {
+        album.addEventListener("click", () => {
+          playSong(albumQueenBohemian[i]);
+        });
+      });
+    }
+
+    /////////---------PLAY ALBUMS----------//////////////
+    if (playBtns) {
+      [...playBtns].forEach((btn, i) => {
+        btn.addEventListener("click", () => {
+          let code = btn.getAttribute("code");
+          playSong(code);
+        });
+      });
+    }
+  }
+
+  /////////---------WHEN I GO TO featured-releases.html do this-----------//////////////
+
+  if (window.location.href.indexOf("featured-releases") != -1) {
+    Releases();
   }
 
   /////////---------RENDER FAV ARTISTS ALBUMS-----------//////////////
@@ -868,6 +963,37 @@ window.onload = function () {
   }
 
   /////////---------RENDER SINGLE CATEGORY PLAYLIST-----------//////////////
+
+  if (window.location.href.indexOf("category") != -1) {
+    let category_id = location.search.substring(1);
+    fetchSingleCategory(category_id)
+      .then((res) => {
+        renderSingleCategory(res, category_id);
+      })
+      .then((res) => {
+        spinner?.classList.replace("d-flex", "d-none");
+      });
+  }
+
+  /////////---------RENDER SEARCH-----------//////////////
+
+  if (window.location.href.indexOf("search") != -1) {
+    let query = location.search.substring(1);
+    fetchSearch(query)
+      .then((res) => (searchResults = res.artists.items))
+      .then((res) => {
+        renderSearchResults(searchResults);
+      });
+  }
+
+  /////////---------RENDER FAV ARTISTS-----------//////////////
+
+  if (window.location.href.indexOf("artists") != -1) {
+    fetchArtists().then((res) => {
+      favArt = res.items;
+      renderFavArtists();
+    });
+  }
 
   if (window.location.href.indexOf("category") != -1) {
     let category_id = location.search.substring(1);
