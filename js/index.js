@@ -647,6 +647,61 @@ const renderFeatured = (data) => {
     })
 
 }
+
+
+
+
+
+//fetch featured releases
+const Releases = () => {
+    return fetch(`https://api.spotify.com/v1/browse/new-releases`, {
+         method: 'GET',
+         headers: {
+             'Content-Type': 'application/x-www-form-urlencoded',
+             'Authorization': JSON.parse(localStorage.getItem('token'))
+         
+         }
+     }).then(res=>res.json())
+       .then(releases => {
+
+        let albums = releases.albums.items
+        console.log(albums[0].artists[0].id)
+
+
+        let titleContainer = document.getElementById('title-releases');
+    let cardsContainer = document.getElementById('container-releases');
+        titleContainer.innerText="New Releases"
+        albums.forEach(album => {
+
+            let div = document.createElement('div')
+        let divClasses = ["col-6","col-md-4","col-lg-3","col-xl-2","text-center"]
+        div.classList.add(...divClasses)
+        div.innerHTML = `      <a href="/single-album.html?${album.artists[0].id}">
+                            <div class="card card-spotify">
+                                <img src="${album.images[0].url}"
+                                    class="card-img-top" alt="..." />
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        ${album.name}
+                                    </h5>
+                                   
+                                </div>
+                            </div>
+                            </a>
+                        `
+        cardsContainer.append(div)
+
+
+        })
+
+
+        
+
+       })
+
+    }
+
+
 //fetch featured playlist
 const fetchAlbumAPI = (album_id) => {
    return fetch(`https://api.spotify.com/v1/albums/${album_id}`, {
@@ -674,6 +729,7 @@ const renderAlbumAPI = (data) => {
     })
   
 }
+
 
 // ON WINDOW LOAD
 
@@ -742,12 +798,17 @@ window.onload = function () {
     
     //Instantiate Album Object
     if (window.location.href.indexOf("single-album") != -1) {
+
+      
+        //     album_id = location.search.substring(1);
+
         let album_id = location.search.substring(1);
         fetchAlbumAPI(album_id).then(res=>renderAlbumAPI(res))
         
         console.log(album_id)
       
         //     
+
         //     current_album = Discography.albums[album_id];
         //     Album_instance = Object.create(Album);
         //     Album_instance.name = current_album.name;
@@ -821,6 +882,18 @@ window.onload = function () {
         }
 
 
+
+        /////////---------WHEN I GO TO featured-releases.html do this-----------//////////////
+
+
+        if (window.location.href.indexOf("featured-releases") != -1) {
+
+            Releases()
+
+
+
+
+        }
 
 
         /////////---------RENDER FAV ARTISTS ALBUMS-----------//////////////
@@ -898,7 +971,11 @@ window.onload = function () {
             let playListSelected = queryString.split("|")[0]
             console.log(playListSelected)
             //when the window load, I render the title of the playlist
+
+            playListTitle.innerHTML = playListSelected
+
             // playListTitle?.innerHTML = playListSelected
+
             playLists.push(playListSelected)
         
         }
