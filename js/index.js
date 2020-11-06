@@ -604,11 +604,56 @@ const Album = {
 };
 
 
+//fetch featured playlist
+const fetchFeatured = () => {
+   return fetch(`https://api.spotify.com/v1/browse/featured-playlists`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': JSON.parse(localStorage.getItem('token'))
+        
+        }
+    }).then(res=>res.json())
+}
+
+
+//render featured page
+
+const renderFeatured = (data) => {
+    console.log(data)
+    let titleContainer = document.getElementById('title-featured');
+    let cardsContainer = document.getElementById('container-featured');
+    titleContainer.innerHTML = data.message;
+    let playlists = data.playlists.items;
+    playlists.forEach(playlist => {
+        let div = document.createElement('div')
+        let divClasses = ["col-6","col-md-4","col-lg-3","col-xl-2","text-center"]
+        div.classList.add(...divClasses)
+        div.innerHTML = `      <a href="/single-album.html?${playlist.id}">
+                            <div class="card card-spotify">
+                                <img src="${playlist.images[0].url}"
+                                    class="card-img-top" alt="..." />
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        ${playlist.name}
+                                    </h5>
+                                   
+                                </div>
+                            </div>
+                            </a>
+                        `
+        cardsContainer.append(div)
+        
+    })
+
+}
+
+
 
 // ON WINDOW LOAD
 
 window.onload = function () {
-//activate search functions
+    //activate search functions
     search()
 
     const queryString = window.location.hash;
@@ -616,13 +661,13 @@ window.onload = function () {
     if (queryString.indexOf('#access_token') != -1) {
         let access_token = queryString.match(/\#(?:access_token)\=([\S\s]*?)\&/)[1];
         TOKEN = TOKEN + access_token
-        localStorage.setItem('token',JSON.stringify(TOKEN))
+        localStorage.setItem('token', JSON.stringify(TOKEN))
         // console.log(JSON.parse(localStorage.getItem('token')))
 
     } else if (queryString.indexOf('#access_token') == -1 && JSON.parse(localStorage.getItem('token')) == null && window.location.href.indexOf("login") == -1) {
-        window.location.href ='/login.html'
+        window.location.href = '/login.html'
     }
-   /////////---------RENDER CATEGORIES-----------//////////////
+    /////////---------RENDER CATEGORIES-----------//////////////
     
     if (window.location.href.indexOf("categories") != -1) {
         console.log('categories')
@@ -630,7 +675,7 @@ window.onload = function () {
             console.log(res)
             renderCategories(res)
            
-})
+        })
     }
     //GET USER INFORMATION
 
@@ -644,7 +689,7 @@ window.onload = function () {
             // playlists:users[0].playlists
         }
         console.log(res)
-                                spinner?.classList.replace('d-flex', 'd-none')
+        spinner?.classList.replace('d-flex', 'd-none')
 
     }
     )
@@ -655,170 +700,189 @@ window.onload = function () {
                 renderPlaylist()
 
 
-        }
+            }
             )
         })
-    .then(res => {
+        .then(res => {
   
-        renderUsername(currentUser)
-        // updatePlaylist(currentUser)
-        clearPlaylist()
-        renderPlaylist()
-        loafFavArt(currentUser)
-    })
+            renderUsername(currentUser)
+            // updatePlaylist(currentUser)
+            clearPlaylist()
+            renderPlaylist()
+            loafFavArt(currentUser)
+        })
 
-/////////---------MOBILE NAV TOGGLE IN INDEX----------//////////////
+    /////////---------MOBILE NAV TOGGLE IN INDEX----------//////////////
     hamburger?.addEventListener('click', displayMobileMenu)
     
-//Instantiate Album Object
-  if (window.location.href.indexOf("single-album") != -1) {
-    album_id = location.search.substring(1);
-    current_album = Discography.albums[album_id];
-    Album_instance = Object.create(Album);
-    Album_instance.name = current_album.name;
-    Album_instance.year = current_album.year;
-    Album_instance.picture = current_album.picture;
-    Album_instance.songList = current_album.songs;
-    Album_instance.loadPicture();
-    Album_instance.loadSongs();
-    Album_instance.playSong_();
-    Album_instance.loadName();
-  }
+    //Instantiate Album Object
+    if (window.location.href.indexOf("single-album") != -1) {
+      
+        //     album_id = location.search.substring(1);
+        //     current_album = Discography.albums[album_id];
+        //     Album_instance = Object.create(Album);
+        //     Album_instance.name = current_album.name;
+        //     Album_instance.year = current_album.year;
+        //     Album_instance.picture = current_album.picture;
+        //     Album_instance.songList = current_album.songs;
+        //     Album_instance.loadPicture();
+        //     Album_instance.loadSongs();
+        //     Album_instance.playSong_();
+        //     Album_instance.loadName();
+        //   
+    }
    
-/////////---------LOGIN----------//////////////
-    //add login event
-    loginBtn?.addEventListener('click', login)
-    // const currentUser = localStorage.getItem('currentUser')
-    // if (JSON.parse(localStorage.getItem('currentUser')) != null) {
-    //     currentUser = JSON.parse(localStorage.getItem('currentUser'))
-    // } else {
-    //     currentUser =users[0]
-    // }
+        /////////---------LOGIN----------//////////////
+        //add login event
+        loginBtn?.addEventListener('click', login)
+        // const currentUser = localStorage.getItem('currentUser')
+        // if (JSON.parse(localStorage.getItem('currentUser')) != null) {
+        //     currentUser = JSON.parse(localStorage.getItem('currentUser'))
+        // } else {
+        //     currentUser =users[0]
+        // }
 
 
    
     
-    /////////---------LOGOUT----------//////////////
-    logooutBtn?.addEventListener('click', logout)
+        /////////---------LOGOUT----------//////////////
+        logooutBtn?.addEventListener('click', logout)
     
         
-/////////---------PLAY SONGS----------//////////////
-    if (albumSongsNodes) {
-        [...albumSongsNodes].forEach((album, i) => {
-            album.addEventListener('click', () => {
-                playSong(albumQueenBohemian[i])
+        /////////---------PLAY SONGS----------//////////////
+        if (albumSongsNodes) {
+            [...albumSongsNodes].forEach((album, i) => {
+                album.addEventListener('click', () => {
+                    playSong(albumQueenBohemian[i])
+                })
             })
-        })
-    }
+        }
 
 
-    /////////---------PLAY ALBUMS----------//////////////
-    if (playBtns) {
-        [...playBtns].forEach((btn, i) => {
-            btn.addEventListener('click', () => {
-                let code = btn.getAttribute('code')
-                playSong(code)
+        /////////---------PLAY ALBUMS----------//////////////
+        if (playBtns) {
+            [...playBtns].forEach((btn, i) => {
+                btn.addEventListener('click', () => {
+                    let code = btn.getAttribute('code')
+                    playSong(code)
+                })
             })
-        })
-    }
+        }
 
-    if (window.location.href.indexOf("index")!= -1)  {
-     spinner.classList.replace('d-flex', 'd-none')
+        if (window.location.href.indexOf("index") != -1) {
+            spinner.classList.replace('d-flex', 'd-none')
 
-    }
+        }
     
  
+        /////////---------WHEN I GO TO featured-playlist.html do this-----------//////////////
+
+        if (window.location.href.indexOf("featured-playlist") != -1) {
+
+            fetchFeatured().then(data => {
+                renderFeatured(data)
+            
+            }
+            
+            )
 
 
 
-           /////////---------RENDER FAV ARTISTS ALBUMS-----------//////////////
+
+        }
+
+
+
+
+        /////////---------RENDER FAV ARTISTS ALBUMS-----------//////////////
 
    
-    if (window.location.href.indexOf("albums-fav") != -1) {
+        if (window.location.href.indexOf("albums-fav") != -1) {
           
         
-          let code = location.search.substring(1)
-          let artistFiltered = favArt.find(artist => artist.code === code)
-        fetchAlbum(code).then(res=>
-            currentFavArtist = res
-        ).then(res => renderFavArtistsAlbums(artistFiltered,code))
-            .then(res => spinner.classList.replace('d-flex', 'd-none')).then(res => {
-            console.log(currentFavArtist)
-        })
+            let code = location.search.substring(1)
+            let artistFiltered = favArt.find(artist => artist.code === code)
+            fetchAlbum(code).then(res =>
+                currentFavArtist = res
+            ).then(res => renderFavArtistsAlbums(artistFiltered, code))
+                .then(res => spinner.classList.replace('d-flex', 'd-none')).then(res => {
+                    console.log(currentFavArtist)
+                })
             
 
-    }
+        }
     
-     /////////---------RENDER SINGLE CATEGORY PLAYLIST-----------//////////////
+        /////////---------RENDER SINGLE CATEGORY PLAYLIST-----------//////////////
 
    
-    if (window.location.href.indexOf("category") != -1) {
+        if (window.location.href.indexOf("category") != -1) {
           
         
-        let category_id = location.search.substring(1)
-        fetchSingleCategory(category_id).then(res => {
-            renderSingleCategory(res,category_id)
+            let category_id = location.search.substring(1)
+            fetchSingleCategory(category_id).then(res => {
+                renderSingleCategory(res, category_id)
             
-        }).then(res => {
-            spinner?.classList.replace('d-flex', 'd-none')
-        })
-    }
+            }).then(res => {
+                spinner?.classList.replace('d-flex', 'd-none')
+            })
+        }
       
 
       
     
     
     
-           /////////---------RENDER SEARCH-----------//////////////
+        /////////---------RENDER SEARCH-----------//////////////
 
    
-      if (window.location.href.indexOf("search") != -1) {
-          let query = location.search.substring(1)
-          fetchSearch(query).then(res =>
-            searchResults = res.artists.items
-          ).then(res => {
-            renderSearchResults(searchResults)
-        })
+        if (window.location.href.indexOf("search") != -1) {
+            let query = location.search.substring(1)
+            fetchSearch(query).then(res =>
+                searchResults = res.artists.items
+            ).then(res => {
+                renderSearchResults(searchResults)
+            })
             
 
-    }
+        }
 
-/////////---------RENDER FAV ARTISTS-----------//////////////
+        /////////---------RENDER FAV ARTISTS-----------//////////////
     
-    if (window.location.href.indexOf("artists") != -1) {
+        if (window.location.href.indexOf("artists") != -1) {
     
-        fetchArtists().then(res => {
+            fetchArtists().then(res => {
            
-            favArt = res.items
-renderFavArtists()})
-    }
+                favArt = res.items
+                renderFavArtists()
+            })
+        }
 
 
     
-/////////---------PLAYLIST-----------//////////////
-//create a new lateral playlist
-    createPlaylistBtn?.addEventListener('click', createPlaylist)
-//display playlist page
-    //I'm looking for the playlist name so that I can display it in the playlist page.
-    if (location.search.substring(1)) {
-        let queryString = location.search.substring(1);
-        let playListSelected = queryString.split("|")[0]
-        console.log(playListSelected)
-        //when the window load, I render the title of the playlist
-        playListTitle.innerHTML = playListSelected
-        playLists.push(playListSelected)
+        /////////---------PLAYLIST-----------//////////////
+        //create a new lateral playlist
+        createPlaylistBtn?.addEventListener('click', createPlaylist)
+        //display playlist page
+        //I'm looking for the playlist name so that I can display it in the playlist page.
+        if (location.search.substring(1)) {
+            let queryString = location.search.substring(1);
+            let playListSelected = queryString.split("|")[0]
+            console.log(playListSelected)
+            //when the window load, I render the title of the playlist
+            playListTitle.innerHTML = playListSelected
+            playLists.push(playListSelected)
         
-    }
-    /////////---------LIKED ALBUMS-----------//////////////
-    [...favIcon].forEach(icon => {
-         icon.addEventListener('click', () => {
-        icon.classList.toggle('fas');
-        const bedge = document.getElementById('bedge')
-        bedge.classList.toggle('d-none')
-    })
+        }
+        /////////---------LIKED ALBUMS-----------//////////////
+        [...favIcon].forEach(icon => {
+            icon.addEventListener('click', () => {
+                icon.classList.toggle('fas');
+                const bedge = document.getElementById('bedge')
+                bedge.classList.toggle('d-none')
+            })
 
      
-    })
+        })
         
        
 
@@ -826,4 +890,4 @@ renderFavArtists()})
     
 
 
-}
+    }
