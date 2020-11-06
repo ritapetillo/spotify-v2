@@ -647,8 +647,33 @@ const renderFeatured = (data) => {
     })
 
 }
+//fetch featured playlist
+const fetchAlbumAPI = (album_id) => {
+   return fetch(`https://api.spotify.com/v1/albums/${album_id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': JSON.parse(localStorage.getItem('token'))
+        
+        }
+    }).then(res=>res.json())
+}
 
-
+//render songs
+const renderAlbumAPI = (data) => {
+    let table = document.getElementById('song-list')
+        let tracks= data.tracks.items
+    tracks.forEach(track => {
+        let tr = document.createElement('tr');
+        tr.innerHTML =`<th scope="row" ><i class="fa fa-music" aria-hidden="true"></i>
+        <i class="far fa-play-circle" songId="${track.id}"></i>
+         </th>
+        <td colspan="2">${track.name}</td>
+         <td></td>`
+        table.append(tr)
+    })
+  
+}
 
 // ON WINDOW LOAD
 
@@ -717,8 +742,12 @@ window.onload = function () {
     
     //Instantiate Album Object
     if (window.location.href.indexOf("single-album") != -1) {
+        let album_id = location.search.substring(1);
+        fetchAlbumAPI(album_id).then(res=>renderAlbumAPI(res))
+        
+        console.log(album_id)
       
-        //     album_id = location.search.substring(1);
+        //     
         //     current_album = Discography.albums[album_id];
         //     Album_instance = Object.create(Album);
         //     Album_instance.name = current_album.name;
@@ -869,7 +898,7 @@ window.onload = function () {
             let playListSelected = queryString.split("|")[0]
             console.log(playListSelected)
             //when the window load, I render the title of the playlist
-            playListTitle.innerHTML = playListSelected
+            // playListTitle?.innerHTML = playListSelected
             playLists.push(playListSelected)
         
         }
