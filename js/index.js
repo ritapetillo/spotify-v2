@@ -38,6 +38,7 @@ let TOKEN = 'Bearer '
 
 
 
+
 let hamburger = document.querySelector('.navBar__hamburger');
 const indexNavbar = document.querySelector('.index__navBar')
 const defaultUser = {
@@ -436,6 +437,39 @@ const fetchCategories = async () => {
    return data.categories.items
 
 }
+
+////------FETCH TOPLIST---------////
+let toplist = []
+const fetchToplist = async() =>{
+    fetch(`https://api.spotify.com/v1/browse/categories/toplists/playlists`,{
+        method: "GET",
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': JSON.parse(localStorage.getItem('token'))
+        }
+    }).then(res => res.json()).then(parsedToplist => {toplists = parsedToplist.playlists.items})}
+
+let globalTop50 = []
+const fetchGlobalTop50 = async() => {
+    fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbMDoHDwVN2tF`,{
+        method: "GET",
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': JSON.parse(localStorage.getItem('token'))
+        }
+}).then(res => res.json()).then(parsedJson => globalTop50 = parsedJson)}
+
+let globalTop50Viral = []
+const fetchGlobalTop50Viral = async() => {
+    fetch(`https://api.spotify.com/v1/playlists/37i9dQZEVXbLiRSasKsNU9`,{
+        method: "GET",
+        headers:{
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': JSON.parse(localStorage.getItem('token'))
+        }
+}).then(res => res.json()).then(parsedJson => globalTop50Viral = parsedJson)}
+
+
 ///----RENDER FAV ARTISTS ALBUMS-----///
 const renderFavArtistsAlbums = (artSelected,code) => {
       let artistTitle = document.querySelector('.artist-title')
