@@ -684,23 +684,32 @@ const fetchAlbumAPI = (album_id) => {
   }).then((res) => res.json());
 };
 
+//milliseconds to minutes converter
+const millissecondsToMinutes = (millis) => {
+  let minutes = Math.floor(millis / 60000);
+  let seconds = ((millis % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+};
+
 //render songs
 const renderAlbumAPI = (data) => {
   let table = document.getElementById("song-list");
   let tracks = data.tracks.items;
-  let preview = document.getElementById("preview");
   console.log(data);
   tracks.forEach((track) => {
     let tr = document.createElement("tr");
+    milliseconds = track.duration_ms;
+    let minutes_and_seconds = millissecondsToMinutes(milliseconds);
     tr.innerHTML = `<th scope="row" ><i class="fa fa-music" aria-hidden="true"></i>
         <i class="far fa-play-circle" songId="${track.id}"></i>
          </th>
         <td colspan="2">${track.name}</td>
-         <td>${track.track_number}</td>`;
+         <td>${minutes_and_seconds}</td>`;
     table.append(tr);
   });
   let card = document.getElementById("prev");
   console.log(card);
+  console.log(data);
   card.innerHTML = `<img class="card-img-top"
       src="${data.images[1].url}"
       alt="Card image cap">
@@ -712,7 +721,7 @@ const renderAlbumAPI = (data) => {
       <div class="d-flex flex-column buttons-wrapper align-items-center">
           <button type="button" class="btn-login btn-green d-inline"
               style="margin-right: 0;">Play</button>
-          <h6>1974 - 16 songs</h6>
+          <h6>${data.release_date.slice(0, 4)} - ${data.total_tracks} songs</h6>
           <div class="icons-wrapper">
               <i class="fa fa-heart" aria-hidden="true"></i>
               <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
