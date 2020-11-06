@@ -669,7 +669,7 @@ const Releases = () => {
 
         let titleContainer = document.getElementById('title-releases');
     let cardsContainer = document.getElementById('container-releases');
-    
+        titleContainer.innerText="New Releases"
         albums.forEach(album => {
 
             let div = document.createElement('div')
