@@ -631,46 +631,46 @@ const renderSingleCategory = (results, cat_id) => {
 };
 ////////Albums Logic////////////
 
-const Album = {
-  name: "",
-  year: "",
-  number_of_songs: "",
-  picture: "",
-  loadPicture: function () {
-    //load Picture in Artist Page
-    let img = document.querySelector(".single-album img");
-    img.setAttribute("src", this.picture);
-  },
-  loadName: function () {
-    let name_element = document.querySelector(".single-album h5");
-    name_element.textContent = this.name;
-  },
-  songList: [{ code: "", title: "", duration: "" }],
-  loadSongs: function () {
-    let song_list = document.querySelectorAll(".song-list tr");
-    for (let i = 0; i < song_list.length; i++) {
-      song_list[
-        i
-      ].firstElementChild.nextElementSibling.textContent = this.songList[
-        i
-      ].title;
-      song_list[i].lastElementChild.textContent = this.songList[i].duration;
-    }
-    console.log(song_list[0].firstElementChild.nextElementSibling.textContent);
-    console.log(song_list[0].lastElementChild.textContent);
-  },
+// const Album = {
+//   name: "",
+//   year: "",
+//   number_of_songs: "",
+//   picture: "",
+//   loadPicture: function () {
+//     //load Picture in Artist Page
+//     let img = document.querySelector(".single-album img");
+//     img.setAttribute("src", this.picture);
+//   },
+//   loadName: function () {
+//     let name_element = document.querySelector(".single-album h5");
+//     name_element.textContent = this.name;
+//   },
+//   songList: [{ code: "", title: "", duration: "" }],
+//   loadSongs: function () {
+//     let song_list = document.querySelectorAll(".song-list tr");
+//     for (let i = 0; i < song_list.length; i++) {
+//       song_list[
+//         i
+//       ].firstElementChild.nextElementSibling.textContent = this.songList[
+//         i
+//       ].title;
+//       song_list[i].lastElementChild.textContent = this.songList[i].duration;
+//     }
+//     console.log(song_list[0].firstElementChild.nextElementSibling.textContent);
+//     console.log(song_list[0].lastElementChild.textContent);
+//   },
 
-  playSong_: function () {
-    let icons = document.querySelectorAll(".table th");
-    let songs = this.songList;
-    for (let i = 0; i < icons.length; i++) {
-      icons[i].addEventListener("click", function () {
-        icons[i].id = i;
-        playSong(songs[icons[i].id].code);
-      });
-    }
-  },
-};
+//   playSong_: function () {
+//     let icons = document.querySelectorAll(".table th");
+//     let songs = this.songList;
+//     for (let i = 0; i < icons.length; i++) {
+//       icons[i].addEventListener("click", function () {
+//         icons[i].id = i;
+//         playSong(songs[icons[i].id].code);
+//       });
+//     }
+//   },
+// };
 
 //fetch featured playlist
 const fetchFeatured = () => {
@@ -774,18 +774,70 @@ const fetchAlbumAPI = (album_id) => {
   }).then((res) => res.json());
 };
 
+// play song from album page
+// const playFromAlbum = () {
+//   let icons = document.querySelectorAll(".table th");
+//   let songs;
+//   for (let i = 0; i < icons.length; i++) {
+//     icons[i].addEventListener("click", function () {
+//       icons[i].id = i;
+//       playSong(songs[icons[i].id].code);
+//     });
+//   }
+// },
+
+//milliseconds to minutes converter
+const millissecondsToMinutes = (millis) => {
+  let minutes = Math.floor(millis / 60000);
+  let seconds = ((millis % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+};
+
 //render songs
 const renderAlbumAPI = (data) => {
   let table = document.getElementById("song-list");
   let tracks = data.tracks.items;
   tracks.forEach((track) => {
     let tr = document.createElement("tr");
+    milliseconds = track.duration_ms;
+    let minutes_and_seconds = millissecondsToMinutes(milliseconds);
     tr.innerHTML = `<th scope="row" ><i class="fa fa-music" aria-hidden="true"></i>
         <i class="far fa-play-circle" songId="${track.id}"></i>
          </th>
         <td colspan="2">${track.name}</td>
-         <td></td>`;
+        <td>${minutes_and_seconds}</td>`;
     table.append(tr);
+  });
+  let card = document.getElementById("prev");
+  console.log(card);
+  console.log(data);
+  card.innerHTML = `<img class="card-img-top"
+          src="${data.images[1].url}"
+          alt="Card image cap">
+      <div class="card-body d-flex flex-column align-items-center">
+          <h5 class=" card-title">${data.name}</h5>
+    
+          <h6>${data.artists[0].name}</h6>
+    
+          <div class="d-flex flex-column buttons-wrapper align-items-center">
+              <button type="button" class="btn-login btn-green d-inline"
+                  style="margin-right: 0;">Play</button>
+              <h6>${data.release_date.slice(0, 4)} - ${
+    data.total_tracks
+  } songs</h6>
+              <div class="icons-wrapper">
+                  <i class="fa fa-heart" aria-hidden="true"></i>
+                  <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+              </div>
+          </div>
+      </div>
+    `;
+  //add playsong
+  let icons = document.querySelectorAll(".table th");
+  icons.forEach((icon, i) => {
+    icon.addEventListener("click", () => {
+      playSong(tracks[i].id);
+    });
   });
 };
 
@@ -921,28 +973,12 @@ window.onload = function () {
   /////////---------MOBILE NAV TOGGLE IN INDEX----------//////////////
   hamburger?.addEventListener("click", displayMobileMenu);
 
-  //Instantiate Album Object
+  //SINGLE-ALBUM
   if (window.location.href.indexOf("single-album") != -1) {
     //     album_id = location.search.substring(1);
 
     let album_id = location.search.substring(1);
     fetchAlbumAPI(album_id).then((res) => renderAlbumAPI(res));
-
-    console.log(album_id);
-
-    //
-
-    //     current_album = Discography.albums[album_id];
-    //     Album_instance = Object.create(Album);
-    //     Album_instance.name = current_album.name;
-    //     Album_instance.year = current_album.year;
-    //     Album_instance.picture = current_album.picture;
-    //     Album_instance.songList = current_album.songs;
-    //     Album_instance.loadPicture();
-    //     Album_instance.loadSongs();
-    //     Album_instance.playSong_();
-    //     Album_instance.loadName();
-    //
   }
 
   /////////---------LOGIN----------//////////////
