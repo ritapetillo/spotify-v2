@@ -224,6 +224,7 @@ const authentication = () => {
   //'https%3A%2F%2Fspotify-clone-api-js.vercel.app'
   const scopes = "user-read-private user-read-email user-top-read";
 
+  // https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=${scopes}&state=34fFs29kd09
   window.location.href = `https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=token&redirect_uri=${redirect_uri}&scope=${scopes}&show_dialog=true`;
 };
 
@@ -682,17 +683,6 @@ const fetchFeatured = () => {
   }).then((res) => res.json());
 };
 
-//fetch featured playlist
-const fetchFeatured = () => {
-  return fetch(`https://api.spotify.com/v1/browse/featured-playlists`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: JSON.parse(localStorage.getItem("token")),
-    },
-  }).then((res) => res.json());
-};
-
 //render featured page
 
 const renderFeatured = (data) => {
@@ -727,6 +717,52 @@ const renderFeatured = (data) => {
     cardsContainer.append(div);
   });
 };
+
+//fetch featured releases
+const Releases = () => {
+  return fetch(`https://api.spotify.com/v1/browse/new-releases`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: JSON.parse(localStorage.getItem("token")),
+    },
+  })
+    .then((res) => res.json())
+    .then((releases) => {
+      let albums = releases.albums.items;
+      console.log(albums[0].artists[0].id);
+
+      let titleContainer = document.getElementById("title-releases");
+      let cardsContainer = document.getElementById("container-releases");
+      titleContainer.innerText = "New Releases";
+      albums.forEach((album) => {
+        let div = document.createElement("div");
+        let divClasses = [
+          "col-6",
+          "col-md-4",
+          "col-lg-3",
+          "col-xl-2",
+          "text-center",
+        ];
+        div.classList.add(...divClasses);
+        div.innerHTML = `      <a href="/single-album.html?${album.artists[0].id}">
+                            <div class="card card-spotify">
+                                <img src="${album.images[0].url}"
+                                    class="card-img-top" alt="..." />
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        ${album.name}
+                                    </h5>
+                                   
+                                </div>
+                            </div>
+                            </a>
+                        `;
+        cardsContainer.append(div);
+      });
+    });
+};
+
 //fetch featured playlist
 const fetchAlbumAPI = (album_id) => {
   return fetch(`https://api.spotify.com/v1/albums/${album_id}`, {
@@ -742,39 +778,72 @@ const fetchAlbumAPI = (album_id) => {
 const renderAlbumAPI = (data) => {
   let table = document.getElementById("song-list");
   let tracks = data.tracks.items;
-  let preview = document.getElementById("preview");
-  console.log(data);
   tracks.forEach((track) => {
     let tr = document.createElement("tr");
     tr.innerHTML = `<th scope="row" ><i class="fa fa-music" aria-hidden="true"></i>
         <i class="far fa-play-circle" songId="${track.id}"></i>
          </th>
         <td colspan="2">${track.name}</td>
-         <td>${track.track_number}</td>`;
+         <td></td>`;
     table.append(tr);
   });
-  let card = document.getElementById("prev");
-  console.log(card);
-  card.innerHTML = `<img class="card-img-top"
-      src="${data.images[1].url}"
-      alt="Card image cap">
-  <div class="card-body d-flex flex-column align-items-center">
-      <h5 class=" card-title">${data.name}</h5>
+};
 
-      <h6>${data.artists[0].name}</h6>
+//fetch top artists
 
-      <div class="d-flex flex-column buttons-wrapper align-items-center">
-          <button type="button" class="btn-login btn-green d-inline"
-              style="margin-right: 0;">Play</button>
-          <h6>1974 - 16 songs</h6>
-          <div class="icons-wrapper">
-              <i class="fa fa-heart" aria-hidden="true"></i>
-              <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
-          </div>
-      </div>
-  </div>
-`;
-  console.log(card);
+const fetchTopArtists = () => {
+  return fetch(`https://api.spotify.com/v1/me/top/artists`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: JSON.parse(localStorage.getItem("token")),
+    },
+  }).then((res) => res.json());
+};
+
+//render top artists
+const renderTopArtists = (favArt) => {
+  favArt = favArt.slice(0, 6);
+  let topArtistsContainer = document.getElementById("top-artists");
+  console.log(favArt);
+  console.log(topArtistsContainer);
+  favArt.forEach((artist) => {
+    let div = document.createElement("div");
+    let divClasses = [
+      "col-6",
+      "col-md-4",
+      "col-lg-3",
+      "col-xl-2",
+      "text-center",
+    ];
+    div.classList.add(...divClasses);
+    div.innerHTML = `      
+                        <div class="card card-spotify">
+                         <a href="albums-fav.html?${artist.id}" class="">
+                            <div class="img-albums">
+                                <div class="imgAlbum">
+                                    <img src="${artist.images[0].url}"
+                                        class="card-img-top d-flex" alt="..." />
+                                    <div class="play_container">
+                                        <i class="far fa-play-circle playFav"
+                                            code="7tFiyTwD0nx5a1eklYtX2J?si=t_70sn2rQymwzhU1wOPThg"></i>
+                                    </div>
+                                    <div class="hearth_container">
+                                        <i class="far fa-heart hearthFav"></i>
+                                    </div>
+                                </div>
+                            </div></a>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    ${artist.name}
+                                </h5>
+                               
+                            </div>
+                        
+                        </a>`;
+
+    topArtistsContainer.append(div);
+  });
 };
 
 // ON WINDOW LOAD
@@ -797,6 +866,16 @@ window.onload = function () {
   ) {
     window.location.href = "/login.html";
   }
+
+  //render home page
+
+  if (window.location.href.indexOf("index") != -1) {
+    fetchTopArtists().then((res) => {
+      console.log(res);
+      renderTopArtists(res.items);
+    });
+  }
+
   /////////---------RENDER CATEGORIES-----------//////////////
 
   if (window.location.href.indexOf("categories") != -1) {
@@ -908,38 +987,6 @@ window.onload = function () {
     fetchFeatured().then((data) => {
       renderFeatured(data);
     });
-
-    /////////---------LOGIN----------//////////////
-    //add login event
-    loginBtn?.addEventListener("click", login);
-    // const currentUser = localStorage.getItem('currentUser')
-    // if (JSON.parse(localStorage.getItem('currentUser')) != null) {
-    //     currentUser = JSON.parse(localStorage.getItem('currentUser'))
-    // } else {
-    //     currentUser =users[0]
-    // }
-
-    /////////---------LOGOUT----------//////////////
-    logooutBtn?.addEventListener("click", logout);
-
-    /////////---------PLAY SONGS----------//////////////
-    if (albumSongsNodes) {
-      [...albumSongsNodes].forEach((album, i) => {
-        album.addEventListener("click", () => {
-          playSong(albumQueenBohemian[i]);
-        });
-      });
-    }
-
-    /////////---------PLAY ALBUMS----------//////////////
-    if (playBtns) {
-      [...playBtns].forEach((btn, i) => {
-        btn.addEventListener("click", () => {
-          let code = btn.getAttribute("code");
-          playSong(code);
-        });
-      });
-    }
   }
 
   /////////---------WHEN I GO TO featured-releases.html do this-----------//////////////
@@ -995,37 +1042,6 @@ window.onload = function () {
     });
   }
 
-  if (window.location.href.indexOf("category") != -1) {
-    let category_id = location.search.substring(1);
-    fetchSingleCategory(category_id)
-      .then((res) => {
-        renderSingleCategory(res, category_id);
-      })
-      .then((res) => {
-        spinner?.classList.replace("d-flex", "d-none");
-      });
-  }
-
-  /////////---------RENDER SEARCH-----------//////////////
-
-  if (window.location.href.indexOf("search") != -1) {
-    let query = location.search.substring(1);
-    fetchSearch(query)
-      .then((res) => (searchResults = res.artists.items))
-      .then((res) => {
-        renderSearchResults(searchResults);
-      });
-  }
-
-  /////////---------RENDER FAV ARTISTS-----------//////////////
-
-  if (window.location.href.indexOf("artists") != -1) {
-    fetchArtists().then((res) => {
-      favArt = res.items;
-      renderFavArtists();
-    });
-  }
-
   /////////---------PLAYLIST-----------//////////////
   //create a new lateral playlist
   createPlaylistBtn?.addEventListener("click", createPlaylist);
@@ -1036,7 +1052,11 @@ window.onload = function () {
     let playListSelected = queryString.split("|")[0];
     console.log(playListSelected);
     //when the window load, I render the title of the playlist
+
+    playListTitle.innerHTML = playListSelected;
+
     // playListTitle?.innerHTML = playListSelected
+
     playLists.push(playListSelected);
   }
   /////////---------LIKED ALBUMS-----------//////////////
