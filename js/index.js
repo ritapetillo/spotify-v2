@@ -774,18 +774,6 @@ const fetchAlbumAPI = (album_id) => {
   }).then((res) => res.json());
 };
 
-// play song from album page
-// const playFromAlbum = () {
-//   let icons = document.querySelectorAll(".table th");
-//   let songs;
-//   for (let i = 0; i < icons.length; i++) {
-//     icons[i].addEventListener("click", function () {
-//       icons[i].id = i;
-//       playSong(songs[icons[i].id].code);
-//     });
-//   }
-// },
-
 //milliseconds to minutes converter
 const millissecondsToMinutes = (millis) => {
   let minutes = Math.floor(millis / 60000);
@@ -898,6 +886,8 @@ const renderTopArtists = (favArt) => {
   });
 };
 
+//-------------------PODCASTS-----------------//
+
 // ON WINDOW LOAD
 
 window.onload = function () {
@@ -973,12 +963,23 @@ window.onload = function () {
   /////////---------MOBILE NAV TOGGLE IN INDEX----------//////////////
   hamburger?.addEventListener("click", displayMobileMenu);
 
-  //SINGLE-ALBUM
+  //------------Render SINGLE-ALBUM----------------
   if (window.location.href.indexOf("single-album") != -1) {
-    //     album_id = location.search.substring(1);
-
     let album_id = location.search.substring(1);
     fetchAlbumAPI(album_id).then((res) => renderAlbumAPI(res));
+  }
+
+  //--------------Render Podcasts-Page--------------
+  if (window.location.href.indexOf("podcasts") != -1) {
+    fetch(`https://api.spotify.com/v1/me/shows`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: JSON.parse(localStorage.getItem("token")),
+      },
+    }).then((res) => console.log(res.json()));
+
+    //fetch podcasts from Api //TODO
   }
 
   /////////---------LOGIN----------//////////////
