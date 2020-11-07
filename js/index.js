@@ -587,46 +587,46 @@ const renderSingleCategory = (results, cat_id) => {
 };
 ////////Albums Logic////////////
 
-const Album = {
-  name: "",
-  year: "",
-  number_of_songs: "",
-  picture: "",
-  loadPicture: function () {
-    //load Picture in Artist Page
-    let img = document.querySelector(".single-album img");
-    img.setAttribute("src", this.picture);
-  },
-  loadName: function () {
-    let name_element = document.querySelector(".single-album h5");
-    name_element.textContent = this.name;
-  },
-  songList: [{ code: "", title: "", duration: "" }],
-  loadSongs: function () {
-    let song_list = document.querySelectorAll(".song-list tr");
-    for (let i = 0; i < song_list.length; i++) {
-      song_list[
-        i
-      ].firstElementChild.nextElementSibling.textContent = this.songList[
-        i
-      ].title;
-      song_list[i].lastElementChild.textContent = this.songList[i].duration;
-    }
-    console.log(song_list[0].firstElementChild.nextElementSibling.textContent);
-    console.log(song_list[0].lastElementChild.textContent);
-  },
+// const Album = {
+//   name: "",
+//   year: "",
+//   number_of_songs: "",
+//   picture: "",
+//   loadPicture: function () {
+//     //load Picture in Artist Page
+//     let img = document.querySelector(".single-album img");
+//     img.setAttribute("src", this.picture);
+//   },
+//   loadName: function () {
+//     let name_element = document.querySelector(".single-album h5");
+//     name_element.textContent = this.name;
+//   },
+//   songList: [{ code: "", title: "", duration: "" }],
+//   loadSongs: function () {
+//     let song_list = document.querySelectorAll(".song-list tr");
+//     for (let i = 0; i < song_list.length; i++) {
+//       song_list[
+//         i
+//       ].firstElementChild.nextElementSibling.textContent = this.songList[
+//         i
+//       ].title;
+//       song_list[i].lastElementChild.textContent = this.songList[i].duration;
+//     }
+//     console.log(song_list[0].firstElementChild.nextElementSibling.textContent);
+//     console.log(song_list[0].lastElementChild.textContent);
+//   },
 
-  playSong_: function () {
-    let icons = document.querySelectorAll(".table th");
-    let songs = this.songList;
-    for (let i = 0; i < icons.length; i++) {
-      icons[i].addEventListener("click", function () {
-        icons[i].id = i;
-        playSong(songs[icons[i].id].code);
-      });
-    }
-  },
-};
+//   playSong_: function () {
+//     let icons = document.querySelectorAll(".table th");
+//     let songs = this.songList;
+//     for (let i = 0; i < icons.length; i++) {
+//       icons[i].addEventListener("click", function () {
+//         icons[i].id = i;
+//         playSong(songs[icons[i].id].code);
+//       });
+//     }
+//   },
+// };
 
 //fetch featured playlist
 const fetchFeatured = () => {
@@ -673,6 +673,7 @@ const renderFeatured = (data) => {
     cardsContainer.append(div);
   });
 };
+
 //fetch featured playlist
 const fetchAlbumAPI = (album_id) => {
   return fetch(`https://api.spotify.com/v1/albums/${album_id}`, {
@@ -683,6 +684,18 @@ const fetchAlbumAPI = (album_id) => {
     },
   }).then((res) => res.json());
 };
+
+// play song from album page
+// const playFromAlbum = () {
+//   let icons = document.querySelectorAll(".table th");
+//   let songs;
+//   for (let i = 0; i < icons.length; i++) {
+//     icons[i].addEventListener("click", function () {
+//       icons[i].id = i;
+//       playSong(songs[icons[i].id].code);
+//     });
+//   }
+// },
 
 //milliseconds to minutes converter
 const millissecondsToMinutes = (millis) => {
@@ -729,7 +742,13 @@ const renderAlbumAPI = (data) => {
       </div>
   </div>
 `;
-  console.log(card);
+  //add playsong
+  let icons = document.querySelectorAll(".table th");
+  icons.forEach((icon, i) => {
+    icon.addEventListener("click", () => {
+      playSong(tracks[i].id);
+    });
+  });
 };
 
 // ON WINDOW LOAD
@@ -797,25 +816,10 @@ window.onload = function () {
   /////////---------MOBILE NAV TOGGLE IN INDEX----------//////////////
   hamburger?.addEventListener("click", displayMobileMenu);
 
-  //Instantiate Album Object
+  //SINGLE-ALBUM
   if (window.location.href.indexOf("single-album") != -1) {
     let album_id = location.search.substring(1);
     fetchAlbumAPI(album_id).then((res) => renderAlbumAPI(res));
-
-    console.log(album_id);
-
-    //
-    //     current_album = Discography.albums[album_id];
-    //     Album_instance = Object.create(Album);
-    //     Album_instance.name = current_album.name;
-    //     Album_instance.year = current_album.year;
-    //     Album_instance.picture = current_album.picture;
-    //     Album_instance.songList = current_album.songs;
-    //     Album_instance.loadPicture();
-    //     Album_instance.loadSongs();
-    //     Album_instance.playSong_();
-    //     Album_instance.loadName();
-    //
   }
 
   /////////---------LOGIN----------//////////////
